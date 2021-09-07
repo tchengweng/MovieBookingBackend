@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,7 +27,22 @@ public class BackendApplication {
 	}
 
 	@Autowired
+	private JavaMailSender javaMailSender;
+
+	@Autowired
 	MovieRepository movieRepo;
+
+	void sendEmail(String testMsg) {
+
+		SimpleMailMessage msg = new SimpleMailMessage();
+		msg.setTo("tcwcheng@hotmail.com");
+
+		msg.setSubject("Testing from Spring Boot");
+		msg.setText(testMsg);
+
+		javaMailSender.send(msg);
+
+	}
 
 	@RequestMapping(
 			value = "/test",
@@ -43,6 +60,8 @@ public class BackendApplication {
 
 		ReturnPayload<List<Movie>> returnPayload = new ReturnPayload<>("/test post",movies);
 
+		sendEmail("/test post");
+
 		return returnPayload;
 	}
 
@@ -55,6 +74,8 @@ public class BackendApplication {
 		List<Movie> movies = movieRepo.findAll();
 
 		ReturnPayload<List<Movie>> returnPayload = new ReturnPayload<>("/test get",movies);
+
+		sendEmail("/test get");
 
 		return returnPayload;
 	}
