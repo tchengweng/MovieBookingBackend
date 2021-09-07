@@ -1,0 +1,2 @@
+{"_id":{"$oid":"61373569ab5dd478e9772f0a"},"name":"Alpha","seatCapacity":30,"row":5,"col":6,"_class":"com.movieBooking.backend.model.Hall"}
+{"_id":{"$oid":"61373569ab5dd478e9772f0b"},"name":"Beta","seatCapacity":40,"row":5,"col":8,"_class":"com.movieBooking.backend.model.Hall"}
