@@ -167,7 +167,7 @@ public class BackendApplication {
 	@RequestMapping(
 			value = "/ReserveSeats",
 			method = RequestMethod.POST)
-	public String processPost(@RequestBody Map<String, Object> payload)
+	public ReturnPayload<Object> processPost(@RequestBody Map<String, Object> payload)
 			throws Exception {
 
 		System.out.println(payload);
@@ -181,7 +181,7 @@ public class BackendApplication {
 				!payload.containsKey("seats") ||
 				!payload.containsKey("screeningId"))
 		{
-			return "Invalid Json Object";
+			return new ReturnPayload<>("query success", "Invalid Json Object");
 		}
 
 		//Convert arrayList to int[]
@@ -204,14 +204,14 @@ public class BackendApplication {
 			sendEmail(result.getSecond().get(), scr,hall,mov);
 
 			System.out.println("After Send Email");
-			return "Seats Reserved";
+			return new ReturnPayload<>("query success", "Seats Reserved");
 		}
 		else if(result.getFirst()==ReservationStatus.SEATS_TAKEN)
 		{
-			return "Seats Taken";
+			return new ReturnPayload<>("query success", "Seats Taken");
 		}
 
-		return "Screening not found";
+		return new ReturnPayload<>("query success", "Screening not found");
 	}
 
 	@RequestMapping(
