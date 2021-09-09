@@ -273,10 +273,9 @@ public class BackendApplication {
 		}
 
 		Optional<Screening> screening = screeningRepo.findById((String)payload.get("screeningId"));
-
 		if(screening.isPresent())
 		{
-			Optional<Hall> hall = hallRepo.findById((String)payload.get(screening.get().getHallId()));
+			Optional<Hall> hall = hallRepo.findById(screening.get().getHallId());
 
 			if(hall.isPresent())
 			{
