@@ -340,14 +340,14 @@ public class BackendApplication {
 			//Check if seats are available and reserve
 			for(int i=0;i<seats.length;++i)
 			{
-				if(seatStatus[i] != SeatStatus.EMPTY)
+				if(seatStatus[seats[i]] != SeatStatus.EMPTY)
 				{
 					seatsAvailable=false;
 					break;
 				}
 				else
 				{
-					seatStatus[i] = SeatStatus.RESERVED;
+					seatStatus[seats[i]] = SeatStatus.RESERVED;
 				}
 			}
 
