@@ -61,7 +61,7 @@ public class BackendApplication {
 		movieRepo.save(new Movie("Shang Chi",
 				"Martial-arts master Shang-Chi confronts the past he thought " +
 						"he left behind when he's drawn into the web of the mysterious Ten Rings organization.",
-				"https://m.media-amazon.com/images/M/MV5BNTliYjlkNDQtMjFlNS00NjgzLWFmMWEtYmM2Mzc2Zjg3ZjEyXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg",
+				"https://www.themoviedb.org/t/p/original/1BIoJGKbXjdFDAqUEiA2VHqkK1Z.jpg",
 				120));
 
 		movieRepo.save(new Movie("Free Guy",
@@ -69,7 +69,7 @@ public class BackendApplication {
 						"he decides to become the hero of his own story -- one that he can rewrite himself. In a world " +
 						"where there's no limits, he's determined to save the day his way before it's too late, and " +
 						"maybe find a little romance with the coder who conceived him.",
-				"https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQEUMqXik1Ntuc2NTpCgbX2JENwlZD3kwDZa4nDm6TCkXVX9FvU",
+				"https://www.themoviedb.org/t/p/original/yc2IfL701hGkNHRgzmF4C6VKO14.jpg",
 				115));
 
 		hallRepo.save(new Hall("Alpha",30,5,6));
@@ -259,6 +259,32 @@ public class BackendApplication {
 		}
 
 		return new ReturnPayload<>("No screening found",null);
+	}
+
+	@RequestMapping(
+			value = "/HallByScreeningId",
+			method = RequestMethod.POST)
+	public ReturnPayload<Hall> hallByScreeningIdPost(@RequestBody Map<String, Object> payload)
+			throws Exception {
+
+		if(!payload.containsKey("screeningId"))
+		{
+			return new ReturnPayload<>("Invalid Json format",null);
+		}
+
+		Optional<Screening> screening = screeningRepo.findById((String)payload.get("screeningId"));
+
+		if(screening.isPresent())
+		{
+			Optional<Hall> hall = hallRepo.findById((String)payload.get(screening.get().getHallId()));
+
+			if(hall.isPresent())
+			{
+				return new ReturnPayload<>("query success",hall.get());
+			}
+		}
+
+		return new ReturnPayload<>("No hall found",null);
 	}
 
 	@RequestMapping(
