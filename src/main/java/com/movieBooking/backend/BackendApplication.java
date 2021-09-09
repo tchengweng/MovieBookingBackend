@@ -372,6 +372,12 @@ public class BackendApplication {
 		SimpleMailMessage msg = new SimpleMailMessage();
 		msg.setTo(reservation.getEmail());
 
+		int[] seats = reservation.getSeats();
+		for(int i=0;i<seats.length;++i)
+		{
+			seats[i]++;
+		}
+
 		msg.setSubject("Movie Reservation Details");
 		String body = "Movie: " + movie.getName() +
 				"\nHall: " + hall.getName() +
