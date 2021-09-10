@@ -298,6 +298,17 @@ public class BackendApplication {
 	}
 
 	@RequestMapping(
+			value = "/AllHalls",
+			method = RequestMethod.GET)
+	public ReturnPayload<List<Hall>> allHallsGet()
+			throws Exception {
+
+		List<Hall> halls = hallRepo.findAll();
+
+		return new ReturnPayload<>("query success",halls);
+	}
+
+	@RequestMapping(
 			value = "/MovieById",
 			method = RequestMethod.POST)
 	public ReturnPayload<Movie> movieByIdPost(@RequestBody Map<String, Object> payload)
