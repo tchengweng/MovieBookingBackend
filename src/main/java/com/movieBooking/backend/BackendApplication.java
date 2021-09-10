@@ -287,6 +287,31 @@ public class BackendApplication {
 	}
 
 	@RequestMapping(
+			value = "/MovieByScreeningId",
+			method = RequestMethod.POST)
+	public ReturnPayload<Movie> movieByScreeningIdPost(@RequestBody Map<String, Object> payload)
+			throws Exception {
+
+		if(!payload.containsKey("screeningId"))
+		{
+			return new ReturnPayload<>("Invalid Json format",null);
+		}
+
+		Optional<Screening> screening = screeningRepo.findById((String)payload.get("screeningId"));
+		if(screening.isPresent())
+		{
+			Optional<Movie> movie = movieRepo.findById(screening.get().getMovieId());
+
+			if(movie.isPresent())
+			{
+				return new ReturnPayload<>("query success",movie.get());
+			}
+		}
+
+		return new ReturnPayload<>("No hall found",null);
+	}
+
+	@RequestMapping(
 			value = "/AllMovies",
 			method = RequestMethod.GET)
 	public ReturnPayload<List<Movie>> allMoviesGet()
