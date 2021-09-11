@@ -10,6 +10,4 @@ public interface ScreeningRepository extends MongoRepository<Screening, String> 
 
     @Query("{movieId:'?0'}")
     List<Screening> findAllItemByMovieId(String movieId);
-
-    public long count();
 }

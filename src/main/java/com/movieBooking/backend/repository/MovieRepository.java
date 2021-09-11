@@ -8,7 +8,5 @@ public interface MovieRepository extends MongoRepository<Movie, String>{
 
     @Query("{name:'?0'}")
     Movie findItemByName(String name);
-
-    public long count();
 }
 

@@ -8,6 +8,4 @@ public interface HallRepository extends MongoRepository<Hall, String> {
 
     @Query("{name:'?0'}")
     Hall findItemByName(String name);
-
-    public long count();
 }

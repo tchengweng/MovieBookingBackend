@@ -28,7 +28,6 @@ import java.util.*;
 @SpringBootApplication
 @EnableMongoRepositories
 public class BackendApplication {
-//public class BackendApplication implements CommandLineRunner {
 
 	@Autowired
 	JavaMailSender javaMailSender;
@@ -51,312 +50,9 @@ public class BackendApplication {
 		SpringApplication.run(BackendApplication.class, args);
 	}
 
-/*	public void run(String... args) {
-		//Fill database
-		movieRepo.deleteAll();
-		hallRepo.deleteAll();
-		screeningRepo.deleteAll();
-		reservationRepo.deleteAll();
-
-		movieRepo.save(new Movie("Shang Chi",
-				"Martial-arts master Shang-Chi confronts the past he thought " +
-						"he left behind when he's drawn into the web of the mysterious Ten Rings organization.",
-				"https://www.themoviedb.org/t/p/original/1BIoJGKbXjdFDAqUEiA2VHqkK1Z.jpg",
-				120));
-
-		movieRepo.save(new Movie("Free Guy",
-				"When a bank teller discovers he's actually a background player in an open-world video game, " +
-						"he decides to become the hero of his own story -- one that he can rewrite himself. In a world " +
-						"where there's no limits, he's determined to save the day his way before it's too late, and " +
-						"maybe find a little romance with the coder who conceived him.",
-				"https://www.themoviedb.org/t/p/original/yc2IfL701hGkNHRgzmF4C6VKO14.jpg",
-				115));
-
-		hallRepo.save(new Hall("Alpha",30,5,6));
-		hallRepo.save(new Hall("Beta",40,5,8));
-
-		String movieId = movieRepo.findItemByName("Shang Chi").getId();
-
-		Date startDate = null;
-		try {
-			startDate = dateSgFormat.get().parse("18-09-2021 18:30");
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-
-		Date endDate = null;
-		try {
-			endDate = dateSgFormat.get().parse("18-09-2021 20:30");
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-
-		Hall alphaHall = hallRepo.findItemByName("Alpha");
-		String HallAlphaId = alphaHall.getId();
-		int seatCapacityAlpha = alphaHall.getSeatCapacity();
-
-		SeatStatus[] seatsAlpha = new SeatStatus[seatCapacityAlpha];
-
-		for(int i=0;i<seatCapacityAlpha;++i)
-		{
-			seatsAlpha[i] = SeatStatus.EMPTY;
-		}
-
-		screeningRepo.save(new Screening(movieId,startDate,endDate,HallAlphaId,seatsAlpha));
-
-		Hall betaHall = hallRepo.findItemByName("Beta");
-		String HallBetaId = betaHall.getId();
-		int seatCapacityBeta = betaHall.getSeatCapacity();
-
-		SeatStatus[] seatsBeta = new SeatStatus[seatCapacityBeta];
-
-		for(int i=0;i<seatCapacityBeta;++i)
-		{
-			seatsBeta[i] = SeatStatus.EMPTY;
-		}
-
-		screeningRepo.save(new Screening(movieId,startDate,endDate,HallBetaId,seatsBeta));
-
-		try {
-			startDate = dateSgFormat.get().parse("18-09-2021 13:30");
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			endDate = dateSgFormat.get().parse("18-09-2021 15:25");
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-
-		Screening sc1 = screeningRepo.save(new Screening(movieRepo.findItemByName("Free Guy").getId(),startDate,endDate,HallAlphaId,seatsAlpha));
-
-		int[] seatsToReserve = new int[3];
-		seatsToReserve[0]=1;
-		seatsToReserve[1]=2;
-		seatsToReserve[2]=3;
-
-		reserveSeats("Cheng Weng","tcwcheng@hotmail.com",seatsToReserve,sc1.getId());
-*//*		Tuple2<ReservationStatus,Optional<Reservation>> res2 = reserveSeats("Cheng Weng 2","tcwcheng@hotmail.com",seatsToReserve,sc1.getId());
-
-		System.out.println(res1.getFirst().toString());
-		System.out.println(res1.getSecond().get());
-
-		System.out.println(res2.getFirst().toString());
-		System.out.println(res2.getSecond().toString());
-
-		if(res1.getFirst() == ReservationStatus.SEATS_SUCCESSFULLY_RESERVED)
-		{
-			Reservation res = res1.getSecond().get();
-			Screening scr = screeningRepo.findById(res.getScreeningId()).get();
-			Movie mov = movieRepo.findById(scr.getMovieId()).get();
-			Hall hall = hallRepo.findById(scr.getHallId()).get();
-
-			sendEmail(res1.getSecond().get(), scr,hall,mov);
-		}*//*
-
-		List<Screening> listOfScreening = screeningRepo.findAllItemByMovieId(movieId);
-
-		for(Screening s: listOfScreening)
-		{
-			System.out.println(s.getHallId());
-			System.out.println(s.getStartTime());
-		}
-	}*/
-
-	@RequestMapping(
-			value = "/ReserveSeats",
-			method = RequestMethod.POST)
-	public ReturnPayload<Object> processPost(@RequestBody Map<String, Object> payload)
-			throws Exception {
-
-		System.out.println(payload);
-		System.out.println(payload.containsKey("name"));
-		System.out.println(payload.containsKey("email"));
-		System.out.println(payload.containsKey("seats"));
-		System.out.println(payload.containsKey("screeningId"));
-
-		if(!payload.containsKey("name") ||
-				!payload.containsKey("email") ||
-				!payload.containsKey("seats") ||
-				!payload.containsKey("screeningId"))
-		{
-			return new ReturnPayload<>("query success", "Invalid Json Object");
-		}
-
-		//Convert arrayList to int[]
-		ArrayList<Integer> seats = (ArrayList<Integer>)payload.get("seats");
-		final int[] seatPrimitive  = new int[seats.size()];
-		Arrays.setAll(seatPrimitive, seats::get);
-
-		Tuple2<ReservationStatus,Optional<Reservation>> result = reserveSeats((String)payload.get("name"),
-				(String)payload.get("email"),
-				seatPrimitive,
-				(String)payload.get("screeningId"));
-
-		if(result.getFirst() == ReservationStatus.SEATS_SUCCESSFULLY_RESERVED)
-		{
-			Reservation res = result.getSecond().get();
-			Screening scr = screeningRepo.findById(res.getScreeningId()).get();
-			Movie mov = movieRepo.findById(scr.getMovieId()).get();
-			Hall hall = hallRepo.findById(scr.getHallId()).get();
-
-			sendEmail(result.getSecond().get(), scr,hall,mov);
-
-			System.out.println("After Send Email");
-			return new ReturnPayload<>("query success", "Seats Reserved");
-		}
-		else if(result.getFirst()==ReservationStatus.SEATS_TAKEN)
-		{
-			return new ReturnPayload<>("query success", "Seats Taken");
-		}
-
-		return new ReturnPayload<>("query success", "Screening not found");
-	}
-
-	@RequestMapping(
-			value = "/AllScreenings",
-			method = RequestMethod.GET)
-	public ReturnPayload<List<Screening>> allScreeningsGet()
-			throws Exception {
-		List<Screening> screenings = screeningRepo.findAll();
-
-		return new ReturnPayload<>("query success",screenings);
-	}
-
-	@RequestMapping(
-			value = "/AllScreeningByMovie",
-			method = RequestMethod.POST)
-	public ReturnPayload<List<Screening>> allScreeningsByMoviePost(@RequestBody Map<String, Object> payload)
-			throws Exception {
-
-		if(!payload.containsKey("movieId"))
-		{
-			return new ReturnPayload<>("Invalid Json format",null);
-		}
-
-		List<Screening> listOfScreening = screeningRepo.findAllItemByMovieId((String)payload.get("movieId"));
-
-		return new ReturnPayload<>("query success",listOfScreening);
-	}
-
-	@RequestMapping(
-			value = "/ScreeningById",
-			method = RequestMethod.POST)
-	public ReturnPayload<Screening> screeningsByIdPost(@RequestBody Map<String, Object> payload)
-			throws Exception {
-
-		if(!payload.containsKey("screeningId"))
-		{
-			return new ReturnPayload<>("Invalid Json format",null);
-		}
-
-		Optional<Screening> screening = screeningRepo.findById((String)payload.get("screeningId"));
-
-		if(screening.isPresent())
-		{
-			return new ReturnPayload<>("query success",screening.get());
-		}
-
-		return new ReturnPayload<>("No screening found",null);
-	}
-
-	@RequestMapping(
-			value = "/HallByScreeningId",
-			method = RequestMethod.POST)
-	public ReturnPayload<Hall> hallByScreeningIdPost(@RequestBody Map<String, Object> payload)
-			throws Exception {
-
-		if(!payload.containsKey("screeningId"))
-		{
-			return new ReturnPayload<>("Invalid Json format",null);
-		}
-
-		Optional<Screening> screening = screeningRepo.findById((String)payload.get("screeningId"));
-		if(screening.isPresent())
-		{
-			Optional<Hall> hall = hallRepo.findById(screening.get().getHallId());
-
-			if(hall.isPresent())
-			{
-				return new ReturnPayload<>("query success",hall.get());
-			}
-		}
-
-		return new ReturnPayload<>("No hall found",null);
-	}
-
-	@RequestMapping(
-			value = "/MovieByScreeningId",
-			method = RequestMethod.POST)
-	public ReturnPayload<Movie> movieByScreeningIdPost(@RequestBody Map<String, Object> payload)
-			throws Exception {
-
-		if(!payload.containsKey("screeningId"))
-		{
-			return new ReturnPayload<>("Invalid Json format",null);
-		}
-
-		Optional<Screening> screening = screeningRepo.findById((String)payload.get("screeningId"));
-		if(screening.isPresent())
-		{
-			Optional<Movie> movie = movieRepo.findById(screening.get().getMovieId());
-
-			if(movie.isPresent())
-			{
-				return new ReturnPayload<>("query success",movie.get());
-			}
-		}
-
-		return new ReturnPayload<>("No hall found",null);
-	}
-
-	@RequestMapping(
-			value = "/AllMovies",
-			method = RequestMethod.GET)
-	public ReturnPayload<List<Movie>> allMoviesGet()
-			throws Exception {
-
-		List<Movie> movies = movieRepo.findAll();
-
-		return new ReturnPayload<>("query success",movies);
-	}
-
-	@RequestMapping(
-			value = "/AllHalls",
-			method = RequestMethod.GET)
-	public ReturnPayload<List<Hall>> allHallsGet()
-			throws Exception {
-
-		List<Hall> halls = hallRepo.findAll();
-
-		return new ReturnPayload<>("query success",halls);
-	}
-
-	@RequestMapping(
-			value = "/MovieById",
-			method = RequestMethod.POST)
-	public ReturnPayload<Movie> movieByIdPost(@RequestBody Map<String, Object> payload)
-			throws Exception {
-
-		if(!payload.containsKey("movieId"))
-		{
-			return new ReturnPayload<>("Invalid Json format",null);
-		}
-
-		Optional<Movie> movie = movieRepo.findById((String)payload.get("movieId"));
-
-		if(movie.isPresent())
-		{
-			return new ReturnPayload<>("query success",movie.get());
-		}
-
-		return new ReturnPayload<>("No movie found",null);
-	}
-
 	//Check and reserve seats
 	private Tuple2<ReservationStatus,Optional<Reservation>>
-		reserveSeats(String name, String email, int[] seats, String screeningId)
+	reserveSeats(String name, String email, int[] seats, String screeningId)
 	{
 		Optional<Screening> toResScreening = screeningRepo.findById(screeningId);
 
@@ -423,5 +119,186 @@ public class BackendApplication {
 		msg.setText(body);
 
 		javaMailSender.send(msg);
+	}
+
+	@RequestMapping(
+			value = "/ReserveSeats",
+			method = RequestMethod.POST)
+	public ReturnPayload<Object> reserveSeatsPost(@RequestBody Map<String, Object> payload) {
+
+		System.out.println(payload);
+		System.out.println(payload.containsKey("name"));
+		System.out.println(payload.containsKey("email"));
+		System.out.println(payload.containsKey("seats"));
+		System.out.println(payload.containsKey("screeningId"));
+
+		if(!payload.containsKey("name") ||
+				!payload.containsKey("email") ||
+				!payload.containsKey("seats") ||
+				!payload.containsKey("screeningId"))
+		{
+			return new ReturnPayload<>("query success", "Invalid Json Object");
+		}
+
+		//Convert arrayList to int[]
+		ArrayList<Integer> seats = (ArrayList<Integer>)payload.get("seats");
+		final int[] seatPrimitive  = new int[seats.size()];
+		Arrays.setAll(seatPrimitive, seats::get);
+
+		Tuple2<ReservationStatus,Optional<Reservation>> result = reserveSeats((String)payload.get("name"),
+				(String)payload.get("email"),
+				seatPrimitive,
+				(String)payload.get("screeningId"));
+
+		if(result.getFirst() == ReservationStatus.SEATS_SUCCESSFULLY_RESERVED)
+		{
+			Reservation res = result.getSecond().get();
+			Screening scr = screeningRepo.findById(res.getScreeningId()).get();
+			Movie mov = movieRepo.findById(scr.getMovieId()).get();
+			Hall hall = hallRepo.findById(scr.getHallId()).get();
+
+			sendEmail(result.getSecond().get(), scr,hall,mov);
+
+			System.out.println("After Send Email");
+			return new ReturnPayload<>("query success", "Seats Reserved");
+		}
+		else if(result.getFirst()==ReservationStatus.SEATS_TAKEN)
+		{
+			return new ReturnPayload<>("query success", "Seats Taken");
+		}
+
+		return new ReturnPayload<>("query success", "Screening not found");
+	}
+
+	@RequestMapping(
+			value = "/AllScreenings",
+			method = RequestMethod.GET)
+	public ReturnPayload<List<Screening>> allScreeningsGet() {
+		List<Screening> screenings = screeningRepo.findAll();
+
+		return new ReturnPayload<>("query success",screenings);
+	}
+
+	@RequestMapping(
+			value = "/AllScreeningByMovie",
+			method = RequestMethod.POST)
+	public ReturnPayload<List<Screening>> allScreeningsByMoviePost(@RequestBody Map<String, Object> payload) {
+
+		if(!payload.containsKey("movieId"))
+		{
+			return new ReturnPayload<>("Invalid Json format",null);
+		}
+
+		List<Screening> listOfScreening = screeningRepo.findAllItemByMovieId((String)payload.get("movieId"));
+
+		return new ReturnPayload<>("query success",listOfScreening);
+	}
+
+	@RequestMapping(
+			value = "/ScreeningById",
+			method = RequestMethod.POST)
+	public ReturnPayload<Screening> screeningsByIdPost(@RequestBody Map<String, Object> payload) {
+
+		if(!payload.containsKey("screeningId"))
+		{
+			return new ReturnPayload<>("Invalid Json format",null);
+		}
+
+		Optional<Screening> screening = screeningRepo.findById((String)payload.get("screeningId"));
+
+		if(screening.isPresent())
+		{
+			return new ReturnPayload<>("query success",screening.get());
+		}
+
+		return new ReturnPayload<>("No screening found",null);
+	}
+
+	@RequestMapping(
+			value = "/HallByScreeningId",
+			method = RequestMethod.POST)
+	public ReturnPayload<Hall> hallByScreeningIdPost(@RequestBody Map<String, Object> payload) {
+
+		if(!payload.containsKey("screeningId"))
+		{
+			return new ReturnPayload<>("Invalid Json format",null);
+		}
+
+		Optional<Screening> screening = screeningRepo.findById((String)payload.get("screeningId"));
+		if(screening.isPresent())
+		{
+			Optional<Hall> hall = hallRepo.findById(screening.get().getHallId());
+
+			if(hall.isPresent())
+			{
+				return new ReturnPayload<>("query success",hall.get());
+			}
+		}
+
+		return new ReturnPayload<>("No hall found",null);
+	}
+
+	@RequestMapping(
+			value = "/MovieByScreeningId",
+			method = RequestMethod.POST)
+	public ReturnPayload<Movie> movieByScreeningIdPost(@RequestBody Map<String, Object> payload) {
+
+		if(!payload.containsKey("screeningId"))
+		{
+			return new ReturnPayload<>("Invalid Json format",null);
+		}
+
+		Optional<Screening> screening = screeningRepo.findById((String)payload.get("screeningId"));
+		if(screening.isPresent())
+		{
+			Optional<Movie> movie = movieRepo.findById(screening.get().getMovieId());
+
+			if(movie.isPresent())
+			{
+				return new ReturnPayload<>("query success",movie.get());
+			}
+		}
+
+		return new ReturnPayload<>("No hall found",null);
+	}
+
+	@RequestMapping(
+			value = "/AllMovies",
+			method = RequestMethod.GET)
+	public ReturnPayload<List<Movie>> allMoviesGet() {
+
+		List<Movie> movies = movieRepo.findAll();
+
+		return new ReturnPayload<>("query success",movies);
+	}
+
+	@RequestMapping(
+			value = "/AllHalls",
+			method = RequestMethod.GET)
+	public ReturnPayload<List<Hall>> allHallsGet() {
+
+		List<Hall> halls = hallRepo.findAll();
+
+		return new ReturnPayload<>("query success",halls);
+	}
+
+	@RequestMapping(
+			value = "/MovieById",
+			method = RequestMethod.POST)
+	public ReturnPayload<Movie> movieByIdPost(@RequestBody Map<String, Object> payload) {
+
+		if(!payload.containsKey("movieId"))
+		{
+			return new ReturnPayload<>("Invalid Json format",null);
+		}
+
+		Optional<Movie> movie = movieRepo.findById((String)payload.get("movieId"));
+
+		if(movie.isPresent())
+		{
+			return new ReturnPayload<>("query success",movie.get());
+		}
+
+		return new ReturnPayload<>("No movie found",null);
 	}
 }
