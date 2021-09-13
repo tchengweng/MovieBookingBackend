@@ -8,6 +8,7 @@ Backend is created using [Spring Boot], [MongoDB] and hosted on [Heroku].
 
 Web app can be accessed via the link below.  
 https://movie-booking-frontend-cw.herokuapp.com  
+(May take a while to load as Heroku goes to sleep when there is no access for a period of time.)  
 
 # Installation
 For local testing  
