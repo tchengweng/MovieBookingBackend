@@ -113,7 +113,7 @@ public class BackendApplication {
 		msg.setSubject("Movie Reservation Details");
 		String body = "Hi " +reservation.getName() + "," +
 				"\nThank you for your purchase!"+
-				"\nYou can proceed directly to the User point with this email.\n"+
+				"\nYou can proceed directly to the usher point with this email.\n"+
 				"\nMovie: " + movie.getName() +
 				"\nHall: " + hall.getName() +
 				"\nDate and time: " +  dateSgFormat.get().format(screening.getStartTime()) +

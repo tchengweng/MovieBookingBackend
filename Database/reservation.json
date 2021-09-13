@@ -1,2 +1,0 @@
-{"_id":{"$oid":"61373569ab5dd478e9772f0f"},"screeningId":"61373569ab5dd478e9772f0e","name":"Cheng Weng","email":"tcwcheng@hotmail.com","seats":[1,2,3],"_class":"com.movieBooking.backend.model.Reservation"}
-{"_id":{"$oid":"61373577ab5dd478e9772f10"},"screeningId":"61373569ab5dd478e9772f0c","name":"tcw","email":"tcwcheng@hotmail.com","seats":[1,2,3],"_class":"com.movieBooking.backend.model.Reservation"}
