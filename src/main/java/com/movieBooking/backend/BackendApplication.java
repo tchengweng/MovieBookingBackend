@@ -56,14 +56,14 @@ public class BackendApplication {
 	{
 		Optional<Screening> toResScreening = screeningRepo.findById(screeningId);
 
-		System.out.println("Handling reservation, name: " + name +
-				" , email: " + email +
-				" , Seats: " + Arrays.toString(seats) +
-				" , Screening Id: " + screeningId);
+		//System.out.println("Handling reservation, name: " + name +
+		//		" , email: " + email +
+		//		" , Seats: " + Arrays.toString(seats) +
+		//		" , Screening Id: " + screeningId);
 
 		if(toResScreening.isPresent())
 		{
-			System.out.println("Screening Id available");
+			//System.out.println("Screening Id available");
 
 			boolean seatsAvailable = true;
 			Screening screening = toResScreening.get();
@@ -85,18 +85,18 @@ public class BackendApplication {
 
 			if(!seatsAvailable)
 			{
-				System.out.println("Seats TAKEN!");
+				//System.out.println("Seats TAKEN!");
 				return new Tuple2(ReservationStatus.SEATS_TAKEN, Optional.empty());
 			}
 
 			screening = screeningRepo.save(screening);
 			Reservation reservation = reservationRepo.save(new Reservation(screening.getId(),name,email,seats));
 
-			System.out.println("Seats SUCCESSFULLY_RESERVED!");
+			//System.out.println("Seats SUCCESSFULLY_RESERVED!");
 			return new Tuple2(ReservationStatus.SEATS_SUCCESSFULLY_RESERVED, Optional.of(reservation));
 		}
 
-		System.out.println("Screening Id not found!");
+		//System.out.println("Screening Id not found!");
 		return new Tuple2(ReservationStatus.SCREENING_ID_NOT_FOUND, Optional.empty());
 	}
 
@@ -111,7 +111,10 @@ public class BackendApplication {
 		}
 
 		msg.setSubject("Movie Reservation Details");
-		String body = "Movie: " + movie.getName() +
+		String body = "Hi " +reservation.getName() + "," +
+				"\nThank you for your purchase!"+
+				"\nYou can proceed directly to the User point with this email.\n"+
+				"\nMovie: " + movie.getName() +
 				"\nHall: " + hall.getName() +
 				"\nDate and time: " +  dateSgFormat.get().format(screening.getStartTime()) +
 				"\nSeats: " + Arrays.toString(reservation.getSeats());
@@ -126,11 +129,11 @@ public class BackendApplication {
 			method = RequestMethod.POST)
 	public ReturnPayload<Object> reserveSeatsPost(@RequestBody Map<String, Object> payload) {
 
-		System.out.println(payload);
-		System.out.println(payload.containsKey("name"));
-		System.out.println(payload.containsKey("email"));
-		System.out.println(payload.containsKey("seats"));
-		System.out.println(payload.containsKey("screeningId"));
+		//System.out.println(payload);
+		//System.out.println(payload.containsKey("name"));
+		//System.out.println(payload.containsKey("email"));
+		//System.out.println(payload.containsKey("seats"));
+		//System.out.println(payload.containsKey("screeningId"));
 
 		if(!payload.containsKey("name") ||
 				!payload.containsKey("email") ||
@@ -159,7 +162,7 @@ public class BackendApplication {
 
 			sendEmail(result.getSecond().get(), scr,hall,mov);
 
-			System.out.println("After Send Email");
+			//System.out.println("After Send Email");
 			return new ReturnPayload<>("query success", "Seats Reserved");
 		}
 		else if(result.getFirst()==ReservationStatus.SEATS_TAKEN)
